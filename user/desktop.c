@@ -8,11 +8,8 @@
 #include "stdio.h"
 
 
-int main(int arg,char *argv[])
-{
-
+int main(){
 
     set_screen(320,200);
-    //get_win();
     return 0;
 }

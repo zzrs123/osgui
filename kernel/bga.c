@@ -15,12 +15,10 @@
 #include "type.h"
 #include "x86.h"
 
-
-
-
 u16 vga_screen_width, vga_screnn_height;
 u32 vga_screen_line_size, bga_screen_buffer_size;
 u32 vga_video_start;
+u8  vga_curren_gmem;
 
 static inline void _bga_write_reg(u16 cmd, u16 data) {
     outw(VBE_DISPI_IOPORT_INDEX, cmd);
@@ -47,6 +45,8 @@ static void _bga_set_resolution(u16 width, u16 height) {
     _bga_write_reg(VBE_DISPI_INDEX_BANK, 0);
     #endif
     vga_screen_line_size = (u32)width * 4;
+    vga_curren_gmem=0;
+
 }
 
 void bga_set_resolution(u32 width, u32 height) 
@@ -55,6 +55,7 @@ void bga_set_resolution(u32 width, u32 height)
     vga_screen_width = width;
     vga_screnn_height = height;
     bga_screen_buffer_size = vga_screen_line_size * height * 2;
+
 }
 
 int bga_ioctl(uintptr_t cmd, uintptr_t arg)
@@ -99,25 +100,7 @@ int init_bga(pci_dev_t *dev) {
     }
     
     vga_video_start = pci_read_bar(dev, 0) & 0xfffffff0;
-    //u32 bga_buf_laddr = K_PHY2LIN(vga_video_start);
-    //bga_set_resolution(vga_screen_width,vga_screnn_height);
-    //kprintf("bga buf paddr=%p; buf size= %d KB\n", vga_video_start,
-    //        bga_screen_buffer_size / 1024);
-    //kprintf("bga mapped in kernel cr3=%p\n", read_cr3());
-
     u32 err_temp;
-    for (int k = 0; k < 1024*768; k += num_4K) {
-        err_temp = lin_mapping_phy(
-                       vga_video_start + k, 	    //线性地址					
-					   vga_video_start + k,	    //物理地址
-					   1,		    //进程pid						
-					   PG_P | PG_USU | PG_RWW,  //页目录的属性位（用户权限）			
-					   PG_P | PG_USU | PG_RWW); //页表的属性位（系统权限）				
-		if (err_temp != 0)
-		{
-			disp_color_str("init_page_pte Error:lin_mapping_phy", 0x74);
-			return -1;
-		}
-    }
+
     return 0;
 }

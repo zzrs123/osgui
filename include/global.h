@@ -56,8 +56,6 @@ extern struct hd_info hd_info[1];   //added by mingxuan 2020-10-27
 
 extern struct sheets* sheets;
 extern struct sheet* sheet_mouse;
-extern u32* sheets_bitmap;
-
 
 
 //vga mode
@@ -65,6 +63,9 @@ extern u32 vga_current_mode;
 extern u16 vga_screen_width, vga_screnn_height;
 extern u32 vga_screen_line_size, bga_screen_buffer_size;
 extern u32 vga_video_start;
+extern u8  vga_curren_gmem;
 
-
-//#define DEBUG
+#define all_debug
+// #define gui_debug
+//#define sheet_debug
+ //#define win_debug

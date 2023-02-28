@@ -78,14 +78,17 @@ void in_process(TTY *p_tty, u32 key)
 				enable_int();
 			}
 			break;
-		case F1: // 按下 F1 弹出一个新窗口
+		case F1:
 			disable_int();
 			current_window=alloc_window();
+			sheet_set_top(current_window->sheet);
+			win_title_put_string(current_window,"new window");
 			win_num++;
 			enable_int();
 			break;
-		case F2:// 按 F2 切换窗口
-			current_window=(current_window->nxt!=NULL)?current_window->nxt:mywin_list_header;
+		case F2:
+		current_window=(current_window->nxt!=NULL)?current_window->nxt:mywin_list_header;
+		sheet_set_top(current_window->sheet);
 		break;
 		case F3: 	// 按 F3 将鼠标绑定到当前窗口，此时窗口可随鼠标移动（窗口移动）
 			mouse_bind_sheet=(mouse_bind_sheet==NULL)?current_window->sheet:
@@ -111,7 +114,6 @@ void in_process(TTY *p_tty, u32 key)
 
 void task_tty()
 {
-	//bga_ioctl(BGA_DISABLE,0);
 	TTY *p_tty;
 	for (p_tty = TTY_FIRST; p_tty < TTY_END; p_tty++)
 	{
@@ -120,8 +122,7 @@ void task_tty()
 
 	p_tty = tty_table;
 	
-	do_set_screen(320,200);
-	sys_gui();
+
 
 	select_console(0);
 
@@ -140,7 +141,9 @@ void task_tty()
 		{
 			do
 			{
+				#ifndef gui_debug
 				if(gui_mode==1)sheet_refresh_rect(sheets);
+				#endif
 				tty_mouse(p_tty); /* tty判断鼠标操作 */
 				tty_dev_read(p_tty);  /* 从键盘输入缓冲区读到这个tty自己的缓冲区 */
 				tty_dev_write(p_tty); /* 把tty缓存区的数据写到这个tty占有的显存 */

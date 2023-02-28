@@ -37,9 +37,10 @@ _NR_delete 		equ 24 ;    //added by mingxuan 2019-5-17
 _NR_opendir 		equ 25 ;    //added by mingxuan 2019-5-17
 _NR_createdir  		equ 26 ;    //added by mingxuan 2019-5-17
 _NR_deletedir   	equ 27 ;    //added by mingxuan 2019-5-17
+_NR_set_screen      equ 28
+_NR_get_win      equ 29
 
-_NR_gui				equ 28;
-_NR_set_screen      equ 29
+
 INT_VECTOR_SYS_CALL	equ 0x90
 
 ; 导出符号
@@ -73,8 +74,9 @@ global	delete		;		//added by mingxuan 2019-5-17
 global  opendir		;		//added by mingxuan 2019-5-17
 global	createdir	;		//added by mingxuan 2019-5-17
 global  deletedir	;		//added by mingxuan 2019-5-17
-global  gui         ;
 global  set_screen
+global  get_win
+
 bits 32
 [section .text]
 ; ====================================================================
@@ -362,17 +364,14 @@ deletedir:
 	int	INT_VECTOR_SYS_CALL
 	pop	ebx
 	ret
-gui:
- 	push	ebx
-	mov	ebx,[esp+4]
- 	mov	eax, _NR_gui
- 	int	INT_VECTOR_SYS_CALL
- 	pop	ebx
-	ret
 set_screen:
 	push	ebx
 	mov	ebx, esp
 	mov	eax, _NR_set_screen
 	int	INT_VECTOR_SYS_CALL
 	pop	ebx
+	ret
+get_win:
+	mov	eax, _NR_get_win
+	int	INT_VECTOR_SYS_CALL
 	ret
